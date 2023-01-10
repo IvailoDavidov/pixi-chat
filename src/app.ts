@@ -1,5 +1,14 @@
 import * as PIXI from 'pixi.js';
+import { TextStyle, Text } from 'pixi.js';
 import { createPanel, resourceTexture } from './utility';
+
+
+const style = new TextStyle({
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fill: 0xffffff,
+    align: 'center'
+})
 
 init();
 
@@ -26,20 +35,26 @@ async function init() {
 
     //Areas
     const outputArea = await createPanel(insetTexture, 750, 475);
-    const inputArea = await createPanel(hoverTexture, 575, 50);
+    const inputArea = await createPanel(insetTexture, 575, 50);
 
     //buttons
-    const orangeButton = await createPanel(hoverTexture, 150, 50);
-    const blueButton = await createPanel(bevelTexture, 150, 50);
+    const insetButton = await createPanel(insetTexture, 150, 50);
+    const sendButton = await createPanel(bevelTexture, 150, 50);
 
-    //positioning
+    //Containers positioning
     textOutputContainer.position.set(25,25);
     textInputContainer.position.set(25,525);
     buttonContainer.position.set(625,525);
 
+    //button Text
+    let text = new Text('Send', style);
+    text.anchor.set(0.5,0.5);
+    text.position.set(sendButton.width/2, sendButton.height/2);
+    sendButton.addChild(text);
+ 
     textOutputContainer.addChild(outputArea);
     textInputContainer.addChild(inputArea);
-    buttonContainer.addChild(orangeButton,blueButton);
+    buttonContainer.addChild(insetButton,sendButton);
 
     app.stage.addChild(textOutputContainer,textInputContainer,buttonContainer);
 
