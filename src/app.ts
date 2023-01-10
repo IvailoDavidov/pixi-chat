@@ -14,9 +14,9 @@ async function init() {
     document.body.appendChild(app.view as HTMLCanvasElement);
     app.ticker.add(update);
 
-    const hoverTexture = await resourceTexture('assets/hover.png');
-    const bevelTexture = await resourceTexture('assets/bevel.png');
-    const insetTexture = await resourceTexture('assets/inset.png');
+    const hoverTexture = await resourceTexture('assets/hover.png',25,105,25,105);
+    const bevelTexture = await resourceTexture('assets/bevel.png',25,105,25,105);
+    const insetTexture = await resourceTexture('assets/inset.png',25,105,25,105);
   
     function update() {
 
