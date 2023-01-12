@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { TextStyle, Text } from 'pixi.js';
+import { TextStyle, Text, FederatedPointerEvent } from 'pixi.js';
+import { Input } from './Input';
 import { createPanel, resourceTexture } from './utility';
 
 
@@ -29,13 +30,13 @@ async function init() {
     const insetTexture = await resourceTexture('assets/inset.png', 25, 105, 25, 105);
 
     //containers
-    const textOutputContainer = new PIXI.Container();
-    const textInputContainer = new PIXI.Container();
+    const outputTextContainer = new PIXI.Container();
+    const inputTextContainer = new PIXI.Container();
     const buttonContainer = new PIXI.Container();
 
-    //Containers positioning
-    textOutputContainer.position.set(25, 25);
-    textInputContainer.position.set(25, 525);
+    //containers positioning
+    outputTextContainer.position.set(25, 25);
+    inputTextContainer.position.set(25, 525);
     buttonContainer.position.set(625, 525);
 
     //Areas
@@ -45,38 +46,77 @@ async function init() {
     //buttons
     const hoverButton = await createPanel(hoverTexture, 150, 50);
     const bevelButton = await createPanel(bevelTexture, 150, 50);
+    const insetButton = await createPanel(insetTexture, 150, 50);
 
-    //add Events to Buttons
+    //add Events 
     bevelButton.interactive = true;
-    hoverButton.interactive = true;
 
-    bevelButton.on('mouseenter', () => {
-        bevelButton.renderable = false;
-        hoverButton.renderable = true;
-    });
+    bevelButton.on('mouseenter', buttonEnter);
+    bevelButton.on('mouseleave', buttonLeave);
+    bevelButton.on('pointerdown', buttonDown);
+    bevelButton.on('pointerup', buttonUp);
 
-    bevelButton.on('mouseleave', () => {
-        bevelButton.renderable = true;
-        hoverButton.renderable = false;
-    });
-
-    bevelButton.on('pointertap', () => {
-        alert('Clicked!');
-    });
+    document.addEventListener('keydown', onKeyDown);
 
     //button Text
-    let text = new Text('Send', style);
+    const text = new Text('Send', style);
     text.anchor.set(0.5, 0.5);
     text.position.set(bevelButton.width / 2, bevelButton.height / 2);
-  
-    textOutputContainer.addChild(outputArea);
-    textInputContainer.addChild(inputArea);
-    buttonContainer.addChild(hoverButton, bevelButton);
+
+    //creaete input Field
+    const inputField = new Input(inputArea);
+    const inputFieldData: string[] = []
+
+    //append
+    outputTextContainer.addChild(outputArea);
+    inputTextContainer.addChild(inputField);
+    buttonContainer.addChild(hoverButton, insetButton, bevelButton);
     buttonContainer.addChild(text);
 
-    app.stage.addChild(textOutputContainer, textInputContainer, buttonContainer);
+    app.stage.addChild(outputTextContainer, inputTextContainer, buttonContainer);
 
     function update() {
 
     }
+
+    function buttonEnter() {
+        bevelButton.renderable = false;
+        hoverButton.renderable = true;
+        insetButton.renderable = false;
+    }
+
+    function buttonLeave() {
+        bevelButton.renderable = true;
+        hoverButton.renderable = false;
+        insetButton.renderable = false;
+    }
+
+    function buttonDown() {
+        bevelButton.renderable = false;
+        hoverButton.renderable = false;
+        insetButton.renderable = true;
+        console.log('clicked');
+
+        inputFieldData.push(inputField.label);
+        inputField.label = '';
+        console.log(inputFieldData);
+    }
+
+    function buttonUp() {
+        hoverButton.renderable = true;
+        insetButton.renderable = false;
+        bevelButton.renderable = false;
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+         if (event.key == 'Backspace' && event.key.length > 0) {
+            inputField.label = inputField.label.slice(0, inputField.label.length - 1);
+         } else if (event.key == 'Enter') {
+             buttonDown();
+             setTimeout(buttonUp,100);
+             setTimeout(buttonLeave,150);
+         } else {
+            inputField.label += `${event.key}`;
+         }
+     }
 }
