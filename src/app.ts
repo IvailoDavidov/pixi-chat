@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { TextStyle, Text, FederatedPointerEvent } from 'pixi.js';
+import { TextStyle, Text } from 'pixi.js';
 import { Input } from './Input';
 import { createPanel, resourceTexture } from './utility';
 
@@ -65,10 +65,13 @@ async function init() {
 
     //creaete input Field
     const inputField = new Input(inputArea);
-    const inputFieldData: string[] = []
+    const inputFieldData: string[] = [];
 
+    //new Text Element
+    const outputText = new Text('', style);
+    outputText.position.set(30, 20);
     //append
-    outputTextContainer.addChild(outputArea);
+    outputTextContainer.addChild(outputArea, outputText);
     inputTextContainer.addChild(inputField);
     buttonContainer.addChild(hoverButton, insetButton, bevelButton);
     buttonContainer.addChild(text);
@@ -100,6 +103,13 @@ async function init() {
         inputFieldData.push(inputField.label);
         inputField.label = '';
         console.log(inputFieldData);
+
+        if (outputText.height < outputArea.height - 20) {
+            outputText.text = '';
+            inputFieldData.forEach(element => {
+                outputText.text += element + '\n';
+            });
+        }
     }
 
     function buttonUp() {
@@ -109,14 +119,19 @@ async function init() {
     }
 
     function onKeyDown(event: KeyboardEvent) {
-         if (event.key == 'Backspace' && event.key.length > 0) {
+        if (event.key == 'Backspace' && event.key.length > 0) {
             inputField.label = inputField.label.slice(0, inputField.label.length - 1);
-         } else if (event.key == 'Enter') {
-             buttonDown();
-             setTimeout(buttonUp,100);
-             setTimeout(buttonLeave,150);
-         } else {
-            inputField.label += `${event.key}`;
-         }
-     }
+        } else if (event.key == 'Enter') {
+            buttonDown();
+            setTimeout(buttonUp, 100);
+            setTimeout(buttonLeave, 150);
+        } else {
+            if (inputField.text.width >= inputField.width) {
+                inputField.height = inputField.height * 2;
+            } else {
+
+                inputField.label += `${event.key}`;
+            }
+        }
+    }
 }

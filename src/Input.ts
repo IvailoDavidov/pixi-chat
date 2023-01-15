@@ -9,14 +9,14 @@ const style = new TextStyle({
 
 export class Input extends Container {
 
-    private text: Text;
+    public text: Text;
     public _label: string = '';
 
     constructor(private element: DisplayObject) {
         super();
 
         this.text = new Text('', style);
-        this.text.anchor.set(0.2, 0.1);
+        this.text.anchor.set(0, 0);
         this.addChild(this.element);
         this.addChild(this.text);
     }
@@ -28,6 +28,6 @@ export class Input extends Container {
 
         this._label = value;
         this.text.text = value;
-        this.text.position.set(this.text.width / 2, this.text.height / 2)
+        this.text.position.set( this.width/20, this.height /3)
     }
 }
