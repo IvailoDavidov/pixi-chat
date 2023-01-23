@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import { resolveCompressedTextureUrl } from 'pixi.js';
 
 export type resourceParts = [
     [PIXI.Texture, PIXI.Texture, PIXI.Texture],

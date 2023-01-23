@@ -28,6 +28,6 @@ export class Input extends Container {
 
         this._label = value;
         this.text.text = value;
-        this.text.position.set( this.width/20, this.height /3)
+        this.text.position.set(this.width / 20, this.height / 3);
     }
 }

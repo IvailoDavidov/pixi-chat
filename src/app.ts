@@ -7,10 +7,10 @@ import { createPanel, resourceTexture } from './utility';
 const style = new TextStyle({
     fontFamily: 'Arial',
     fontSize: 24,
-    fill: 0xffffff,
-    align: 'center'
+    fill: 0xffffff
 })
 
+//Start
 init();
 
 async function init() {
@@ -44,9 +44,9 @@ async function init() {
     const inputArea = await createPanel(insetTexture, 575, 50);
 
     //buttons
-    const hoverButton = await createPanel(hoverTexture, 150, 50);
-    const bevelButton = await createPanel(bevelTexture, 150, 50);
-    const insetButton = await createPanel(insetTexture, 150, 50);
+    const hoverButton = await createPanel(hoverTexture, 150, 50); //orange
+    const bevelButton = await createPanel(bevelTexture, 150, 50); //unclicked blue
+    const insetButton = await createPanel(insetTexture, 150, 50); //clicked blue
 
     //add Events 
     bevelButton.interactive = true;
@@ -73,8 +73,7 @@ async function init() {
     //append
     outputTextContainer.addChild(outputArea, outputText);
     inputTextContainer.addChild(inputField);
-    buttonContainer.addChild(hoverButton, insetButton, bevelButton);
-    buttonContainer.addChild(text);
+    buttonContainer.addChild(hoverButton, insetButton, bevelButton, text);
 
     app.stage.addChild(outputTextContainer, inputTextContainer, buttonContainer);
 
@@ -98,17 +97,25 @@ async function init() {
         bevelButton.renderable = false;
         hoverButton.renderable = false;
         insetButton.renderable = true;
-        console.log('clicked');
 
         inputFieldData.push(inputField.label);
         inputField.label = '';
-        console.log(inputFieldData);
 
-        if (outputText.height < outputArea.height - 20) {
-            outputText.text = '';
-            inputFieldData.forEach(element => {
-                outputText.text += element + '\n';
+        textPossitioning(outputText, outputArea, inputFieldData);
+    }
+
+    function textPossitioning(text: PIXI.Text, container: PIXI.Container, data: string[]) {
+        const heightEndPoint = 20;
+
+        if (text.height < container.height - heightEndPoint) {
+            text.text = '';
+            data.forEach(sentence => {
+                text.text += sentence + '\n';
             });
+        } else {
+            //TODO:
+            text.width -= 10;
+            text.height -= 10;
         }
     }
 
@@ -119,17 +126,17 @@ async function init() {
     }
 
     function onKeyDown(event: KeyboardEvent) {
+        const widthEndpoint = 60;
+
         if (event.key == 'Backspace' && event.key.length > 0) {
             inputField.label = inputField.label.slice(0, inputField.label.length - 1);
         } else if (event.key == 'Enter') {
             buttonDown();
-            setTimeout(buttonUp, 100);
-            setTimeout(buttonLeave, 150);
+            setTimeout(buttonLeave, 100);
         } else {
-            if (inputField.text.width >= inputField.width) {
-                inputField.height = inputField.height * 2;
+            if (inputField.text.width >= inputField.width - widthEndpoint) {
+                 //TODO:
             } else {
-
                 inputField.label += `${event.key}`;
             }
         }
